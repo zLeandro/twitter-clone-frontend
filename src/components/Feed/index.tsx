@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axiosInstance from '../utils/axiosInstance';
 import {
   FeedContainer,
   PostCard,
@@ -6,10 +7,12 @@ import {
   Avatar,
   PostContent,
   Actions,
-  Username
+  Username,
 } from './styles';
 
-interface Post {
+import TweetInput from '../TweetInput';
+
+interface PostData {
   id: number;
   conteudo: string;
   username: string;
@@ -18,20 +21,33 @@ interface Post {
 }
 
 const Feed: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostData[]>([]);
+  const [tweet, setTweet] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
+  // Busca as postagens com tipagem correta
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/postagens/', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-      const data = await response.json();
-      setPosts(data);
+      const response = await axiosInstance.get<PostData[]>('/postagens/listar/');
+      setPosts(response.data);
     } catch (error) {
       console.error('Erro ao buscar postagens:', error);
+      setErrorMessage('Erro ao carregar postagens.');
+    }
+  };
+
+  // Envia novo tweet
+  const handlePostTweet = async () => {
+    if (!tweet.trim()) return;
+
+    setErrorMessage('');
+    try {
+      const response = await axiosInstance.post<PostData>('/postagens/criar/', { conteudo: tweet });
+      setPosts((prevPosts) => [response.data, ...prevPosts]);
+      setTweet('');
+    } catch (error) {
+      console.error('Erro ao postar:', error);
+      setErrorMessage('Não foi possível postar.');
     }
   };
 
@@ -41,13 +57,17 @@ const Feed: React.FC = () => {
 
   return (
     <FeedContainer>
+      <TweetInput tweet={tweet} setTweet={setTweet} handlePostTweet={handlePostTweet} />
+
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
       {posts.length === 0 ? (
         <p>Nenhuma postagem encontrada.</p>
       ) : (
         posts.map((post) => (
           <PostCard key={post.id}>
             <PostHeader>
-              {post.avatar && <Avatar src={post.avatar} alt="avatar" />}
+              {post.avatar && <Avatar src={post.avatar} alt={`${post.username} avatar`} />}
               <Username>{post.username}</Username>
             </PostHeader>
             <PostContent>{post.conteudo}</PostContent>

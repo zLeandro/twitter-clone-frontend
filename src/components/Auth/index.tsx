@@ -7,7 +7,11 @@ interface LoginResponse {
   refresh: string;
 }
 
-const Auth: React.FC<{ setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>> }> = ({ setIsAuthenticated }) => {
+interface AuthProps {
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -15,12 +19,12 @@ const Auth: React.FC<{ setIsAuthenticated: React.Dispatch<React.SetStateAction<b
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Função separada para login com username e password como argumentos
+  const handleLoginWithCredentials = async (username: string, password: string) => {
     try {
       const response = await axios.post<LoginResponse>('http://localhost:8000/api/token/', {
-        username: username.trim(),
-        password: password.trim(),
+        username,
+        password,
       });
 
       const { access, refresh } = response.data;
@@ -35,21 +39,31 @@ const Auth: React.FC<{ setIsAuthenticated: React.Dispatch<React.SetStateAction<b
     }
   };
 
+  // Função de login ligada ao form, só previne o comportamento padrão e chama a função acima
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    await handleLoginWithCredentials(username.trim(), password.trim());
+  };
+
+  // Função de cadastro, que chama o login com as credenciais se der certo
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
       await axios.post('http://localhost:8000/api/contas/registrar/', {
         username: username.trim(),
         email: email.trim(),
         password: password.trim(),
       });
-
-      handleLogin(e);
+      // Após registrar, já faz o login automático
+      await handleLoginWithCredentials(username.trim(), password.trim());
     } catch (error: any) {
       console.error('Erro de cadastro:', error.response?.data);
 
-      if (error.response?.data) {
+      if (error.response?.status === 400) {
         const data = error.response.data;
+        // Converte mensagens do backend para string única
         const messages = Object.values(data)
           .flat()
           .join(' ');
@@ -87,10 +101,12 @@ const Auth: React.FC<{ setIsAuthenticated: React.Dispatch<React.SetStateAction<b
         <button type="submit">{isLogin ? 'Entrar' : 'Cadastrar'}</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button onClick={() => {
-        setError('');
-        setIsLogin(!isLogin);
-      }}>
+      <button
+        onClick={() => {
+          setError('');
+          setIsLogin(!isLogin);
+        }}
+      >
         {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
       </button>
     </div>
