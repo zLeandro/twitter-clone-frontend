@@ -53,3 +53,18 @@ export const EditButton = styled(Link)`
     background-color: #0d8ddb;
   }
 `;
+
+export const FollowButton = styled.button`
+  background-color: #1da1f2;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0d8ddb;
+  }
+`;

@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import {
+  Container,
+  Card,
+  Title,
+  Form,
+  Input,
+  Button,
+  ErrorMessage,
+  ToggleLink,
+} from './styles';
+
 interface LoginResponse {
   access: string;
   refresh: string;
@@ -19,7 +30,6 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
-  // Função separada para login com username e password como argumentos
   const handleLoginWithCredentials = async (username: string, password: string) => {
     try {
       const response = await axios.post<LoginResponse>('http://localhost:8000/api/token/', {
@@ -34,19 +44,17 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
 
       setIsAuthenticated(true);
       navigate('/');
-    } catch (error) {
+    } catch {
       setError('Usuário ou senha inválidos');
     }
   };
 
-  // Função de login ligada ao form, só previne o comportamento padrão e chama a função acima
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     await handleLoginWithCredentials(username.trim(), password.trim());
   };
 
-  // Função de cadastro, que chama o login com as credenciais se der certo
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -56,17 +64,11 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
         email: email.trim(),
         password: password.trim(),
       });
-      // Após registrar, já faz o login automático
       await handleLoginWithCredentials(username.trim(), password.trim());
     } catch (error: any) {
-      console.error('Erro de cadastro:', error.response?.data);
-
       if (error.response?.status === 400) {
         const data = error.response.data;
-        // Converte mensagens do backend para string única
-        const messages = Object.values(data)
-          .flat()
-          .join(' ');
+        const messages = Object.values(data).flat().join(' ');
         setError(messages);
       } else {
         setError('Erro ao cadastrar usuário');
@@ -75,41 +77,43 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <div>
-      <h1>{isLogin ? 'Login' : 'Cadastro'}</h1>
-      <form onSubmit={isLogin ? handleLogin : handleRegister}>
-        <input
-          type="text"
-          placeholder="Usuário"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        {!isLogin && (
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+    <Container>
+      <Card>
+        <Title>{isLogin ? 'Login' : 'Cadastro'}</Title>
+        <Form onSubmit={isLogin ? handleLogin : handleRegister}>
+          <Input
+            type="text"
+            placeholder="Usuário"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        )}
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">{isLogin ? 'Entrar' : 'Cadastrar'}</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button
-        onClick={() => {
-          setError('');
-          setIsLogin(!isLogin);
-        }}
-      >
-        {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
-      </button>
-    </div>
+          {!isLogin && (
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          )}
+          <Input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit">{isLogin ? 'Entrar' : 'Cadastrar'}</Button>
+        </Form>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <ToggleLink
+          onClick={() => {
+            setError('');
+            setIsLogin(!isLogin);
+          }}
+        >
+          {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
+        </ToggleLink>
+      </Card>
+    </Container>
   );
 };
 

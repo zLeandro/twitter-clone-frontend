@@ -31,8 +31,8 @@ const App: React.FC = () => {
           }
         >
           <Route path="/" element={<Feed />} />
-          <Route path="/editar-perfil" element={<EditProfile />} />
           <Route path="/perfil" element={<Profile />} />
+          <Route path="/perfil/:username" element={<Profile />} />
         </Route>
       </Routes>
     </Router>

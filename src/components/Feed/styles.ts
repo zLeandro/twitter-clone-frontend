@@ -1,4 +1,10 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { Link } from 'react-router-dom';
+
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
 
 export const FeedContainer = styled.div`
   display: flex;
@@ -17,6 +23,15 @@ export const PostCard = styled.div`
   &:hover {
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
   }
+`;
+
+export const PostSkeleton = styled.div`
+  height: 120px;
+  width: 100%;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f5f5f5 25%, #e9e9e9 37%, #f5f5f5 63%);
+  background-size: 400% 100%;
+  animation: ${shimmer} 1.5s infinite;
 `;
 
 export const PostHeader = styled.div`
@@ -66,5 +81,47 @@ export const Actions = styled.div`
     &:hover {
       background: #f0f8ff;
     }
+  }
+`;
+
+export const UsernameLink = styled(Link)`
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: #1da1f2;
+    text-decoration: underline;
+  }
+`;
+
+export const CommentContainer = styled.div`
+  margin-top: 8px;
+`;
+
+export const CommentTextarea = styled.textarea`
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 14px;
+  font-family: inherit;
+`;
+
+export const CommentButton = styled.button`
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: none;
+  background-color: #1da1f2;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0d8ddb;
   }
 `;
