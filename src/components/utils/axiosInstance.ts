@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'https://twitter-clone-htwu.onrender.com/api/',
 });
 
 function isTokenValid(token: string | null): boolean {
@@ -24,7 +24,7 @@ async function refreshAccessToken(): Promise<string> {
   if (!refreshToken) throw new Error('Sem refresh token');
 
   try {
-    const response = await axios.post<RefreshResponse>('http://localhost:8000/api/token/refresh/', {
+    const response = await axios.post<RefreshResponse>('https://twitter-clone-htwu.onrender.com/api/token/refresh/', {
       refresh: refreshToken,
     });
     const { access } = response.data;

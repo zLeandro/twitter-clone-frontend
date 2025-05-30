@@ -19,7 +19,7 @@ export async function refreshAccessToken(): Promise<string | null> {
   if (!refreshToken) return null;
 
   try {
-    const response = await fetch('http://localhost:8000/api/token/refresh/', {
+    const response = await fetch('https://twitter-clone-htwu.onrender.com/api/token/refresh/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
