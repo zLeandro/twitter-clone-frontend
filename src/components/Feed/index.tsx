@@ -173,7 +173,7 @@ const Feed: React.FC = () => {
   useEffect(() => {
     fetchPosts();
 
-    const interval = setInterval(fetchPosts, 30000); // Atualiza a cada 30s
+    const interval = setInterval(fetchPosts, 30000);
     return () => clearInterval(interval);
   }, [fetchPosts]);
 

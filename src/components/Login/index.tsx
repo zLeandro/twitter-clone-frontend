@@ -21,7 +21,7 @@ const Login: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/token/', {
+      const response = await axios.post('https://twitter-clone-htwu.onrender.com/api/token/', {
         username,
         password,
       });

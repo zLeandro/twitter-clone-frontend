@@ -32,7 +32,7 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
 
   const handleLoginWithCredentials = async (username: string, password: string) => {
     try {
-      const response = await axios.post<LoginResponse>('http://localhost:8000/api/token/', {
+      const response = await axios.post<LoginResponse>('https://twitter-clone-htwu.onrender.com/api/token/', {
         username,
         password,
       });
@@ -59,7 +59,7 @@ const Auth: React.FC<AuthProps> = ({ setIsAuthenticated }) => {
     e.preventDefault();
     setError('');
     try {
-      await axios.post('http://localhost:8000/api/contas/registrar/', {
+      await axios.post('https://twitter-clone-htwu.onrender.com/api/contas/registrar/', {
         username: username.trim(),
         email: email.trim(),
         password: password.trim(),

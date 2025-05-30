@@ -31,7 +31,7 @@ interface EditProfileProps {
   onSave: (perfilAtualizado: UserProfile) => void;
 }
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://twitter-clone-htwu.onrender.com';
 
 const EditProfile: React.FC<EditProfileProps> = ({ perfil, onSave }) => {
   const [nome, setNome] = useState<string>(perfil.username);
